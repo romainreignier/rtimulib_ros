@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>rtimulib_ros</name>
+  <version>1.0.0</version>
+  <description>A simple package to use the nice RTIMULib from RichardsTech in ROS</description>
+
+  <author email="rom.reignier@gmail.com">Romain REIGNIER</author>
+  <maintainer email="rom.reignier@gmail.com">Romain REIGNIER</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+
+</package>

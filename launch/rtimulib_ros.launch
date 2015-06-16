@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="rtimulib_ros" type="rtimulib_ros" name="rtimulib_node" output="screen">
+        <param name="calibration_file_path" value="$(find rtimulib_ros)/config"/>
+        <param name="frame_id" value="map"/> <!-- /map is used for debug in RViz, to be replaced by the imu_link -->
+        <param name="update_rate" value="10"/>
+    </node>
+</launch>
