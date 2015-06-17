@@ -36,11 +36,11 @@ int main(int argc, char **argv)
     ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu/data", 1);
 
     std::string path_calib_file;
-    n.getParam("/imu_node/calibration_file_path", path_calib_file);
+    n.getParam("/rtimulib_node/calibration_file_path", path_calib_file);
     std::string frame_id;
-    n.getParam("/imu_node/frame_id", frame_id);
+    n.getParam("/rtimulib_node/frame_id", frame_id);
     double update_rate;
-    if(!n.getParam("/imu_node/update_rate", update_rate))
+    if(!n.getParam("/rtimulib_node/update_rate", update_rate))
     {
         ROS_WARN("No update_rate provided - default: 20 Hz");
         update_rate = 20;

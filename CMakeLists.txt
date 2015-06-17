@@ -6,6 +6,11 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
 )
 
+catkin_package(
+    LIBRARIES rtimulib_ros
+    CATKIN_DEPENDS roscpp sensor_msgs
+)
+
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
