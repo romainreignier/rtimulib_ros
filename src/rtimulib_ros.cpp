@@ -31,14 +31,36 @@
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "rtimulib_node");
-    ROS_INFO("Imu driver is running");
+    ROS_INFO("Imu driver is now running");
     ros::NodeHandle n;
-    ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu/data", 1);
 
-    std::string path_calib_file;
-    n.getParam("/rtimulib_node/calibration_file_path", path_calib_file);
+    std::string topic_name;
+    if(!n.getParam("/rtimulib_node/topic_name", topic_name))
+    {
+        ROS_WARN("No topic_name provided - default: imu/data");
+        topic_name = "imu/data";
+    }
+
+    std::string calibration_file_path;
+    if(!n.getParam("/rtimulib_node/calibration_file_path", calibration_file_path))
+    {
+        ROS_ERROR("The calibration_file_path parameter must be set to use a calibration file.");
+    }
+
+    std::string calibration_file_name;
+    if(!n.getParam("/rtimulib_node/calibration_file_name", calibration_file_name))
+    {
+        ROS_WARN("No calibration_file_name provided - default: RTIMULib.ini");
+        calibration_file_name = "RTIMULib";
+    }
+
     std::string frame_id;
-    n.getParam("/rtimulib_node/frame_id", frame_id);
+    if(!n.getParam("/rtimulib_node/frame_id", frame_id))
+    {
+        ROS_WARN("No frame_id provided - default: imu_link");
+        frame_id = "imu_link";
+    }
+
     double update_rate;
     if(!n.getParam("/rtimulib_node/update_rate", update_rate))
     {
@@ -46,8 +68,10 @@ int main(int argc, char **argv)
         update_rate = 20;
     }
 
+    ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>(topic_name.c_str(), 1);
+
     // Load the RTIMULib.ini config file
-    RTIMUSettings *settings = new RTIMUSettings(path_calib_file.c_str(), "RTIMULib"); 
+    RTIMUSettings *settings = new RTIMUSettings(calibration_file_path.c_str(), calibration_file_name.c_str()); 
 
     RTIMU *imu = RTIMU::createIMU(settings);
 
