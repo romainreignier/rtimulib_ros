@@ -28,6 +28,8 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 
+static const double G_TO_MPSS = 9.80665;
+
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "rtimulib_node");
@@ -85,18 +87,22 @@ int main(int argc, char **argv)
         if (imu->IMURead())
         {
             RTIMU_DATA imu_data = imu->getIMUData();
+
             imu_msg.header.stamp = ros::Time::now();
             imu_msg.header.frame_id = frame_id;
+
             imu_msg.orientation.x = imu_data.fusionQPose.x(); 
             imu_msg.orientation.y = imu_data.fusionQPose.y(); 
             imu_msg.orientation.z = imu_data.fusionQPose.z(); 
             imu_msg.orientation.w = imu_data.fusionQPose.scalar(); 
+
             imu_msg.angular_velocity.x = imu_data.gyro.x();
             imu_msg.angular_velocity.y = imu_data.gyro.y();
             imu_msg.angular_velocity.z = imu_data.gyro.z();
-            imu_msg.linear_acceleration.x = imu_data.accel.x();
-            imu_msg.linear_acceleration.y = imu_data.accel.y();
-            imu_msg.linear_acceleration.z = imu_data.accel.z();
+
+            imu_msg.linear_acceleration.x = imu_data.accel.x() * G_TO_MPSS;
+            imu_msg.linear_acceleration.y = imu_data.accel.y() * G_TO_MPSS;
+            imu_msg.linear_acceleration.z = imu_data.accel.z() * G_TO_MPSS;
 
             imu_pub.publish(imu_msg);
         }
