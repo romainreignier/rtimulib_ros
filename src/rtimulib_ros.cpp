@@ -79,11 +79,9 @@ int main(int argc, char **argv)
     imu->setAccelEnable(true);
     imu->setCompassEnable(true);
 
-    ros::Rate loop_rate(update_rate);
+    sensor_msgs::Imu imu_msg;
     while (ros::ok())
     {
-        sensor_msgs::Imu imu_msg;
-
         if (imu->IMURead())
         {
             RTIMU_DATA imu_data = imu->getIMUData();
@@ -103,7 +101,7 @@ int main(int argc, char **argv)
             imu_pub.publish(imu_msg);
         }
         ros::spinOnce();
-        loop_rate.sleep();
+        ros::Duration(imu->IMUGetPollInterval() / 1000.0).sleep();
     }
     return 0;
 }
