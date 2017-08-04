@@ -1,5 +1,5 @@
 // RTIMULib ROS Node
-// Copyright (c) 2015, Romain Reignier
+// Copyright (c) 2017, Romain Reignier
 // All rights reserved.
 
 // Redistribution and use in source and binary forms, with or without
@@ -32,54 +32,41 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "rtimulib_node");
     ROS_INFO("Imu driver is now running");
-    ros::NodeHandle n;
-    ros::NodeHandle private_n("~");
-
-    std::string topic_name;
-    if(!private_n.getParam("topic_name", topic_name))
-    {
-        ROS_WARN("No topic_name provided - default: imu/data");
-        topic_name = "imu/data";
-    }
+    ros::NodeHandle nh("~");
 
     std::string calibration_file_path;
-    if(!private_n.getParam("calibration_file_path", calibration_file_path))
+    if(!nh.getParam("calibration_file_path", calibration_file_path))
     {
-        ROS_ERROR("The calibration_file_path parameter must be set to use a calibration file.");
+        ROS_ERROR("The calibration_file_path parameter must be set to use a "
+                  "calibration file.");
+        ROS_BREAK();
     }
 
-    std::string calibration_file_name;
-    if(!private_n.getParam("calibration_file_name", calibration_file_name))
+    std::string calibration_file_name = "RTIMULib";
+    if(!nh.getParam("calibration_file_name", calibration_file_name))
     {
-        ROS_WARN("No calibration_file_name provided - default: RTIMULib.ini");
-        calibration_file_name = "RTIMULib";
+        ROS_WARN_STREAM("No calibration_file_name provided - default: "
+                        << calibration_file_name);
     }
 
-    std::string frame_id;
-    if(!private_n.getParam("frame_id", frame_id))
+    std::string frame_id = "imu_link";
+    if(!nh.getParam("frame_id", frame_id))
     {
-        ROS_WARN("No frame_id provided - default: imu_link");
-        frame_id = "imu_link";
+        ROS_WARN_STREAM("No frame_id provided - default: " << frame_id);
     }
 
-    double update_rate;
-    if(!private_n.getParam("update_rate", update_rate))
-    {
-        ROS_WARN("No update_rate provided - default: 20 Hz");
-        update_rate = 20;
-    }
-
-    ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>(topic_name.c_str(), 1);
+    ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("imu", 1);
 
     // Load the RTIMULib.ini config file
-    RTIMUSettings *settings = new RTIMUSettings(calibration_file_path.c_str(), calibration_file_name.c_str()); 
+    RTIMUSettings *settings = new RTIMUSettings(calibration_file_path.c_str(),
+                                                calibration_file_name.c_str());
 
     RTIMU *imu = RTIMU::createIMU(settings);
 
     if ((imu == NULL) || (imu->IMUType() == RTIMU_TYPE_NULL))
     {
         ROS_ERROR("No Imu found");
-        return -1;
+        ROS_BREAK();
     }
 
     // Initialise the imu object
