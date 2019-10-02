@@ -15,9 +15,21 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(rtimulib_ros src/rtimulib_ros.cpp)
+add_executable(${PROJECT_NAME} src/${PROJECT_NAME}.cpp)
 
-target_link_libraries(rtimulib_ros
+target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   RTIMULib
+)
+
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY
+  config
+  launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
