@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <RTIMULib.h>
+
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 
@@ -91,10 +92,12 @@ int main(int argc, char **argv)
             imu_msg.header.stamp = ros::Time::now();
             imu_msg.header.frame_id = frame_id;
 
-            imu_msg.orientation.x = imu_data.fusionQPose.x(); 
-            imu_msg.orientation.y = imu_data.fusionQPose.y(); 
-            imu_msg.orientation.z = imu_data.fusionQPose.z(); 
-            imu_msg.orientation.w = imu_data.fusionQPose.scalar(); 
+            // NED to ENU Convertion
+            // Swap X / Y and negate Z
+            imu_msg.orientation.x = imu_data.fusionQPose.y();
+            imu_msg.orientation.y = imu_data.fusionQPose.x();
+            imu_msg.orientation.z = -imu_data.fusionQPose.z();
+            imu_msg.orientation.w = imu_data.fusionQPose.scalar();
 
             imu_msg.angular_velocity.x = imu_data.gyro.x();
             imu_msg.angular_velocity.y = imu_data.gyro.y();
