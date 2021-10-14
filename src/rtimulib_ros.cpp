@@ -58,6 +58,10 @@ int main(int argc, char **argv)
         ROS_WARN_STREAM("No frame_id provided - default: " << frame_id);
     }
 
+    bool use_compass = nh.param<bool>("use_compass", true);
+
+    ROS_INFO_STREAM("Use Compass: " << use_compass);
+
     ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("imu", 1);
 
     // Load the RTIMULib.ini config file
@@ -80,7 +84,7 @@ int main(int argc, char **argv)
     // Enable the sensors
     imu->setGyroEnable(true);
     imu->setAccelEnable(true);
-    imu->setCompassEnable(true);
+    imu->setCompassEnable(use_compass);
 
     sensor_msgs::Imu imu_msg;
     while (ros::ok())
