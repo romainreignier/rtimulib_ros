@@ -40,9 +40,9 @@ int main(int argc, char **argv)
     std::string calibration_file_path;
     if(!nh.getParam("calibration_file_path", calibration_file_path))
     {
-        ROS_ERROR("The calibration_file_path parameter must be set to use a "
+        ROS_FATAL("The calibration_file_path parameter must be set to use a "
                   "calibration file.");
-        ROS_BREAK();
+        return -1;
     }
 
     std::string calibration_file_name = "RTIMULib";
@@ -69,11 +69,10 @@ int main(int argc, char **argv)
                                                 calibration_file_name.c_str());
 
     RTIMU *imu = RTIMU::createIMU(settings);
-
     if ((imu == NULL) || (imu->IMUType() == RTIMU_TYPE_NULL))
     {
-        ROS_ERROR("No Imu found");
-        ROS_BREAK();
+        ROS_FATAL("No Imu found");
+        return -1;
     }
 
     // Initialise the imu object
@@ -87,6 +86,7 @@ int main(int argc, char **argv)
     imu->setCompassEnable(use_compass);
 
     sensor_msgs::Imu imu_msg;
+    ros::Duration wait(imu->IMUGetPollInterval() / 1000.0);
     while (ros::ok())
     {
         if (imu->IMURead())
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
             imu_pub.publish(imu_msg);
         }
         ros::spinOnce();
-        ros::Duration(imu->IMUGetPollInterval() / 1000.0).sleep();
+        wait.sleep();
     }
     return 0;
 }
